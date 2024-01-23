@@ -1,5 +1,5 @@
 # Ignore .datadb directory
-.datadb/
+backend/.datadb/
 
 # Ignore node_modules directory
-node_modules/
+backend/node_modules/
