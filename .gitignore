@@ -1,0 +1,5 @@
+# Ignore .datadb directory
+.datadb/
+
+# Ignore node_modules directory
+node_modules/
