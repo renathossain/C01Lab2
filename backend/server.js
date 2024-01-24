@@ -172,7 +172,7 @@ app.get("/getNote/:noteId", express.json(), async (req, res) => {
   });
 
   // Get all notes
-  app.post("/getAllNotes", express.json(), async (req, res) => {
+  app.get("/getAllNotes", express.json(), async (req, res) => {
     try {
 
       // Verify the JWT from the request headers
@@ -181,8 +181,17 @@ app.get("/getNote/:noteId", express.json(), async (req, res) => {
         if (err) {
           return res.status(401).send("Unauthorized.");
         }
+
+        // Get all notes
+        const collection = db.collection(COLLECTIONS.notes);
+        // Query the collection
+        const data = await collection.find({
+          username: decoded.username,
+        }).toArray();
+
+        // Display the result
         res.json({
-          name: decoded.username,
+          response: data,
         });
       });
     
@@ -192,7 +201,7 @@ app.get("/getNote/:noteId", express.json(), async (req, res) => {
   });
 
 // Delete a note
-app.post("/deleteNote/:noteId", express.json(), async (req, res) => {
+app.delete("/deleteNote/:noteId", express.json(), async (req, res) => {
   try {
 
     // Verify the JWT from the request headers
@@ -212,7 +221,7 @@ app.post("/deleteNote/:noteId", express.json(), async (req, res) => {
 });
 
 // Modify a note
-app.post("/editNote/:noteId", express.json(), async (req, res) => {
+app.patch("/editNote/:noteId", express.json(), async (req, res) => {
   try {
 
     // Verify the JWT from the request headers
