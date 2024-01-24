@@ -246,6 +246,11 @@ app.delete("/deleteNote/:noteId", express.json(), async (req, res) => {
 // Modify a note
 app.patch("/editNote/:noteId", express.json(), async (req, res) => {
   try {
+    // Basic param checking
+    const noteId = req.params.noteId;
+    if (!ObjectId.isValid(noteId)) {
+      return res.status(400).json({ error: "Invalid note ID." });
+    }
 
     // Verify the JWT from the request headers
     const token = req.headers.authorization.split(" ")[1];
@@ -253,8 +258,42 @@ app.patch("/editNote/:noteId", express.json(), async (req, res) => {
       if (err) {
         return res.status(401).send("Unauthorized.");
       }
+
+      // Find if note exists in the database
+      const collection = db.collection(COLLECTIONS.notes);
+      const data = await collection.findOne({
+        username: decoded.username,
+        _id: new ObjectId(noteId),
+      });
+      if (!data) {
+        return res.status(404).json({ error: "Unable to find note with the given ID." });
+      }
+
+      // Basic body request check, needs to be modified
+      const { title, content } = req.body;
+      if (!title && !content) {
+        return res
+          .status(400)
+          .json({ error: "Title and/or content are both required." });
+      }
+
+      // Update note based on provided fields
+      const updateFields = {};
+      if (title) {
+        updateFields.title = title;
+      }
+      if (content) {
+        updateFields.content = content;
+      }
+      await collection.updateOne(
+        { username: decoded.username,
+          _id: new ObjectId(noteId) },
+        { $set: updateFields }
+      );
+
+      // Display success message
       res.json({
-        name: decoded.username,
+        response: `Document with ID ${noteId} properly updated.`
       });
     });
   
