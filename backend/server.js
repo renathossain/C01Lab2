@@ -170,3 +170,63 @@ app.get("/getNote/:noteId", express.json(), async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
+
+  // Get all notes
+  app.post("/getAllNotes", express.json(), async (req, res) => {
+    try {
+
+      // Verify the JWT from the request headers
+      const token = req.headers.authorization.split(" ")[1];
+      jwt.verify(token, "secret-key", async (err, decoded) => {
+        if (err) {
+          return res.status(401).send("Unauthorized.");
+        }
+        res.json({
+          name: decoded.username,
+        });
+      });
+    
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+// Delete a note
+app.post("/deleteNote/:noteId", express.json(), async (req, res) => {
+  try {
+
+    // Verify the JWT from the request headers
+    const token = req.headers.authorization.split(" ")[1];
+    jwt.verify(token, "secret-key", async (err, decoded) => {
+      if (err) {
+        return res.status(401).send("Unauthorized.");
+      }
+      res.json({
+        name: decoded.username,
+      });
+    });
+  
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Modify a note
+app.post("/editNote/:noteId", express.json(), async (req, res) => {
+  try {
+
+    // Verify the JWT from the request headers
+    const token = req.headers.authorization.split(" ")[1];
+    jwt.verify(token, "secret-key", async (err, decoded) => {
+      if (err) {
+        return res.status(401).send("Unauthorized.");
+      }
+      res.json({
+        name: decoded.username,
+      });
+    });
+  
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
